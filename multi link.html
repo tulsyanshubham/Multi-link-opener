@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multi-Link Opener</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg-dark: #151416;
+      --purple-accent: #6500f3;
+      --purple-scroll: #8e6cc3;
+      --text-color: #f0e9ff;
+      --box-bg: #1a1a1a;
+      --border-color: #3a2a4f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-dark);
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      color: var(--purple-accent);
+      margin: 30px 0 20px;
+      text-align: center;
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+    }
+
+    textarea {
+      width: 100%;
+      max-width: 600px;
+      min-height: 7em;
+      max-height: 36em;
+      overflow-y: auto;
+      padding: 1em;
+      background-color: var(--box-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      resize: none;
+      font-size: 1rem;
+      line-height: 1.5em;
+      margin-bottom: 20px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--purple-scroll) var(--box-bg);
+    }
+
+    textarea::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    textarea::-webkit-scrollbar-track {
+      background: var(--box-bg);
+    }
+
+    textarea::-webkit-scrollbar-thumb {
+      background-color: var(--purple-scroll);
+      border-radius: 10px;
+    }
+
+    button {
+      padding: 10px 25px;
+      background-color: var(--purple-scroll);
+      color: #fff;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+      max-width: 90vw;
+    }
+
+    button:hover {
+      background-color: #7a5aa9;
+    }
+
+    .output-container {
+      margin-top: 10px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .note {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: #bbb;
+      max-width: 600px;
+      margin-inline: auto;
+    }
+
+    @media (max-width: 480px) {
+      textarea {
+        font-size: 0.95rem;
+        padding: 0.9em;
+      }
+
+      button {
+        font-size: 0.95rem;
+        padding: 8px 18px;
+      }
+
+      .note {
+        font-size: 0.85rem;
+        padding: 0 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Multi-Link Opener</h1>
+
+  <textarea id="linkInput" placeholder="Paste your links here...&#10;https://example.com&#10;http://another.com"></textarea>
+
+  <div class="output-container" id="linkOutput"></div>
+
+  <script>
+    const textarea = document.getElementById("linkInput");
+    const outputDiv = document.getElementById("linkOutput");
+
+    function autoResizeTextarea(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 36 * 16) + 'px';
+    }
+
+    textarea.addEventListener("input", () => {
+      autoResizeTextarea(textarea);
+
+      const raw = textarea.value.trim();
+      const links = raw.split("\n").map(link => link.trim()).filter(link => link.length > 0);
+      outputDiv.innerHTML = "";
+
+      if (links.length === 0) return;
+
+      const button = document.createElement("button");
+      button.textContent = `Open ${links.length} Link${links.length > 1 ? 's' : ''}`;
+      button.onclick = () => {
+        links.forEach(link => {
+          const url = link.match(/^https?:\/\//) ? link : "http://" + link;
+          window.open(url, "_blank");
+        });
+      };
+
+      const note = document.createElement("div");
+      note.className = "note";
+      note.textContent = "Pop-up blockers might prevent some tabs. Allow them if prompted.";
+
+      outputDiv.appendChild(button);
+      outputDiv.appendChild(note);
+    });
+
+    autoResizeTextarea(textarea);
+  </script>
+
+</body>
+</html>
